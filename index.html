@@ -3,54 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMDIS Terminal</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+    <title>PROJECT AMDIS // DECLASSIFIED</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        :root {
+            --bg-color: #050505;
+            --text-color: #00ff41;
+            --red-alert: #ff003c;
+            --redacted-bg: #1a1a1a;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-        }
-        .declassify {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        .glitch {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'VT323', monospace;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
             position: relative;
-            color: white;
-            font-size: 2em;
         }
-        .scanline {
-            position: absolute;
+
+        /* CRT Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
             top: 0;
             left: 0;
+            bottom: 0;
             right: 0;
-            height: 100%;
-            background: repeating-linear-gradient(
-                rgba(255, 0, 0, 0.5) 0,
-                rgba(255, 0, 0, 0.5) 1px,
-                transparent 1px,
-                transparent 5px
-            );
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
             pointer-events: none;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed var(--text-color);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .warning {
+            color: var(--red-alert);
+            font-size: 1.5rem;
+            animation: blink 2s infinite;
+        }
+
+        .lore-box {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Redacted Text Effect */
+        .redacted {
+            background-color: var(--text-color);
+            color: var(--text-color);
+            padding: 0 4px;
+            user-select: none;
+            transition: all 0.3s;
+        }
+
+        .revealed .redacted {
+            background-color: transparent;
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        /* The Big Red Button */
+        .button-container {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        #discombobulate-btn {
+            background-color: var(--red-alert);
+            color: white;
+            font-family: 'VT323', monospace;
+            font-size: 3rem;
+            padding: 1rem 3rem;
+            border: 4px solid #8b0000;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #8b0000, 0 15px 20px rgba(0,0,0,0.5);
+            text-transform: uppercase;
+            transition: all 0.1s;
+        }
+
+        #discombobulate-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 0px 0 #8b0000, 0 5px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Contract Address Reveal */
+        .ca-box {
+            display: none;
+            text-align: center;
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid var(--text-color);
+            padding: 2rem;
+            margin-top: 2rem;
+            animation: fadeIn 1s forwards;
+        }
+
+        .ca-text {
+            font-size: 1.5rem;
+            word-break: break-all;
+            color: #fff;
+            margin-top: 1rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.5rem;
+            border: 1px solid var(--text-color);
+            padding: 0.5rem 1rem;
+        }
+
+        .social-links a:hover {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* Animations */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glitch Effect applied to body during button press */
+        .glitching {
+            animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            filter: hue-rotate(90deg) invert(10%);
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0) }
+            20% { transform: translate(-5px, 5px) }
+            40% { transform: translate(-5px, -5px) }
+            60% { transform: translate(5px, 5px) }
+            80% { transform: translate(5px, -5px) }
+            100% { transform: translate(0) }
         }
     </style>
 </head>
 <body>
-    <h1>AMDIS Terminal</h1>
-    <button class="declassify">DECLASSIFY</button>
-    <div class="glitch"><span>Redacted Text</span><div class="scanline"></div></div>
-    <p>Contract Address: <span id="contractAddress">0xYourContractAddress</span></p>
+
+    <div class="container" id="main-container">
+        <div class="header">
+            <h1 class="warning">TOP SECRET // EYES ONLY</h1>
+            <h2>OPERATION: EPIC FURY // PROJECT $AMDIS</h2>
+        </div>
+
+        <div class="lore-box">
+            <p>> SYSTEM INITIALIZED...</p>
+            <p>> INCOMING TRANSMISSION...</p>
+            <br>
+            <p>They thought they were ready. They had the rockets. They had the buttons.</p>
+            <p>Then we activated <span class="redacted">THE DISCOMBOBULATOR</span>.</p>
+            <p>"We came in, they pressed buttons and <span class="redacted">NOTHING WORKED</span>."</p>
+            <br>
+            <p>The weapon isn't just hardware. It is now on-chain. When the market panics, when the bears try to drop red candles, the system jams their signals.</p>
+            <p>> STATUS: <span style="color: var(--red-alert);">AWAITING MANUAL OVERRIDE</span></p>
+        </div>
+
+        <div class="button-container" id="action-area">
+            <audio id="trump-audio" src="YOUR_AUDIO_LINK_HERE.mp3" preload="auto"></audio>
+            
+            <button id="discombobulate-btn">DECLASSIFY</button>
+        </div>
+
+        <div class="ca-box" id="ca-reveal">
+            <h2>🚨 WEAPON DEPLOYED 🚨</h2>
+            <p>OFFICIAL CONTRACT ADDRESS:</p>
+            <div class="ca-text" id="ca-string">D8KqdmF91kV8AA13kpZrdYjPQXNUt5uCDTkAgqKopump</div>
+            
+            <div class="social-links">
+                <a href="https://x.com/Operationamdis" target="_blank">X (TWITTER)</a>
+                <a href="https://t.me/americandiscumbobulator" target="_blank">TELEGRAM</a>
+                <a href="https://pump.fun/D8KqdmF91kV8AA13kpZrdYjPQXNUt5uCDTkAgqKopump" target="_blank">PUMP.FUN</a>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const button = document.querySelector('.declassify');
-        const contractAddress = document.getElementById('contractAddress');
-        button.addEventListener('click', () => {
-            contractAddress.textContent = "0xActualContractAddress";
-            contractAddress.style.color = 'green';
+        const btn = document.getElementById('discombobulate-btn');
+        const container = document.getElementById('main-container');
+        const caBox = document.getElementById('ca-reveal');
+        const actionArea = document.getElementById('action-area');
+        const audio = document.getElementById('trump-audio');
+
+        btn.addEventListener('click', () => {
+            // 1. Play the audio
+            // Note: If you don't have an audio file yet, remove or comment out the line below so it doesn't error.
+            // audio.play().catch(e => console.log("Audio play failed, user interaction needed or bad link."));
+            
+            // 2. Trigger visual glitch
+            document.body.classList.add('glitching');
+            btn.innerText = "JAMMING SIGNAL...";
+            
+            // 3. After 1.5 seconds, reveal the CA and stop glitching
+            setTimeout(() => {
+                document.body.classList.remove('glitching');
+                container.classList.add('revealed'); // Un-redacts text
+                actionArea.style.display = 'none'; // Hides button
+                caBox.style.display = 'block'; // Shows CA
+            }, 1500);
         });
     </script>
 </body>
